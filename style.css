@@ -1,0 +1,1264 @@
+/* ==========================================================================
+   IvyInvi Style - Online Invitation Platform (Polaroid Beige Theme)
+   Optimized: Clean Guest View + Separate Admin Dashboard
+   ========================================================================== */
+
+:root {
+  --bg-warm-paper: #FAF6EE;
+  --bg-light-ivory: #FBF7F0;
+  --bg-album: #F5F0E6;
+  --bg-inner-card: #FFFCF6;
+  --bg-polaroid: #FFFFFF;
+  
+  --border-kraft: #D4C8B0;
+  --border-light: #EDE8DC;
+  --border-accent: #C8BC9E;
+  
+  --text-main: #1A1A1A;
+  --text-muted: #666666;
+  --text-light: #8C827A;
+  --accent-terracotta: #E06354;
+  --accent-gold: #D4A373;
+  --accent-sage: #8A9A86;
+
+  --font-main: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-script: 'Dancing Script', cursive;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  
+  --card-shadow: 0 10px 30px rgba(80, 60, 40, 0.08);
+  --polaroid-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --washi-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: #ECE5D8;
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Craft dot matrix background texture */
+.dot-texture {
+  background-color: var(--bg-warm-paper);
+  background-image: radial-gradient(rgba(26, 26, 26, 0.09) 0.75px, transparent 0.75px);
+  background-size: 12px 12px;
+}
+
+/* ==========================================================================
+   1. ENVELOPE SCREEN (MÀN HÌNH BÌ THƯ MỞ ĐẦU)
+   ========================================================================== */
+#envelope-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #FDFBF7 0%, #EFE7DA 100%);
+  padding: 20px;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#envelope-screen.opened {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.05);
+}
+
+.envelope-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #FFF;
+  border-radius: 16px;
+  padding: 40px 24px;
+  box-shadow: 0 20px 50px rgba(100, 80, 60, 0.2);
+  border: 1px solid var(--border-kraft);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Airmail vintage border */
+.envelope-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(
+    45deg,
+    #E06354,
+    #E06354 10px,
+    #FAF6EE 10px,
+    #FAF6EE 20px,
+    #3D5A80 20px,
+    #3D5A80 30px,
+    #FAF6EE 30px,
+    #FAF6EE 40px
+  );
+}
+
+.sparkle-decor {
+  font-size: 1.5rem;
+  animation: floatSparkle 2.5s infinite ease-in-out;
+  display: inline-block;
+}
+
+@keyframes floatSparkle {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+}
+
+.envelope-seal {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: radial-gradient(circle, #E06354 0%, #B84739 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  font-size: 26px;
+  box-shadow: 0 6px 16px rgba(184, 71, 57, 0.4);
+  border: 3px solid #FFF;
+}
+
+.envelope-guest-tag {
+  display: inline-block;
+  background: #F3EBDD;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 30px;
+  margin-bottom: 12px;
+  border: 1px dashed var(--border-kraft);
+}
+
+.envelope-title {
+  font-size: 1.05rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.envelope-name {
+  font-size: 2.2rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+
+.btn-open-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--text-main);
+  color: #FFF;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 14px 36px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.btn-open-card:hover {
+  background: var(--accent-terracotta);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(224, 99, 84, 0.4);
+}
+
+/* ==========================================================================
+   2. MAIN INVITATION CONTAINER (KHUNG THIỆP CHÍNH)
+   ========================================================================== */
+.invitation-wrapper {
+  max-width: 520px;
+  margin: 0 auto;
+  background-color: var(--bg-warm-paper);
+  min-height: 100vh;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 60px;
+  border-left: 1px solid var(--border-kraft);
+  border-right: 1px solid var(--border-kraft);
+}
+
+/* Washi Tape Stickers */
+.washi-tape {
+  position: absolute;
+  height: 26px;
+  z-index: 5;
+  box-shadow: var(--washi-shadow);
+  opacity: 0.9;
+}
+
+.washi-keep-going {
+  background: repeating-linear-gradient(
+    -45deg,
+    #F3E8D2,
+    #F3E8D2 8px,
+    #E6D5B8 8px,
+    #E6D5B8 16px
+  );
+  color: #6A5B47;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border: 1px dashed rgba(106, 91, 71, 0.3);
+}
+
+.washi-kraft {
+  background: rgba(220, 203, 175, 0.85);
+  border-left: 2px dashed rgba(255,255,255,0.4);
+  border-right: 2px dashed rgba(255,255,255,0.4);
+}
+
+/* ==========================================================================
+   HERO / COVER SECTION
+   ========================================================================== */
+.hero-section {
+  padding: 45px 24px 26px;
+  text-align: center;
+  position: relative;
+}
+
+.event-subtitle {
+  font-size: 0.88rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent-terracotta);
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.event-main-title {
+  font-size: 2.3rem;
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--text-main);
+  margin-bottom: 22px;
+}
+
+/* Polaroid Photo Styling */
+.polaroid-frame {
+  background: var(--bg-polaroid);
+  padding: 14px 14px 44px 14px;
+  border-radius: 4px;
+  box-shadow: var(--polaroid-shadow);
+  display: inline-block;
+  position: relative;
+  transform: rotate(-1.5deg);
+  transition: transform 0.3s ease;
+  max-width: 340px;
+  width: 100%;
+}
+
+.polaroid-frame:hover {
+  transform: rotate(0deg) scale(1.02);
+}
+
+.polaroid-frame img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+.polaroid-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-script);
+  font-size: 1.55rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.hero-quote {
+  margin: 26px auto 0;
+  max-width: 400px;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.7;
+  position: relative;
+  padding: 0 16px;
+}
+
+.hero-quote::before, .hero-quote::after {
+  content: '"';
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--border-kraft);
+}
+
+/* ==========================================================================
+   EVENT INFO & CALENDAR SECTION
+   ========================================================================== */
+.card-section {
+  margin: 24px 18px;
+  padding: 30px 22px;
+  background: var(--bg-inner-card);
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  position: relative;
+}
+
+.section-badge {
+  display: inline-block;
+  background: #F2E9DB;
+  color: #726252;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.section-heading {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.section-subheading {
+  font-family: var(--font-script);
+  font-size: 1.75rem;
+  color: var(--accent-terracotta);
+  text-align: center;
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
+
+/* Date & Time Highlights */
+.event-datetime-box {
+  background: var(--bg-warm-paper);
+  border: 1px dashed var(--border-kraft);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.event-day-string {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-terracotta);
+}
+
+.event-time-string {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Mini Calendar Widget */
+.calendar-widget {
+  background: #FFF;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+}
+
+.calendar-header {
+  font-weight: 700;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.calendar-day-name {
+  font-weight: 600;
+  color: var(--text-light);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.calendar-day-num {
+  padding: 6px 0;
+  border-radius: 8px;
+  color: var(--text-main);
+}
+
+.calendar-day-num.empty {
+  visibility: hidden;
+}
+
+.calendar-day-num.active-event {
+  background: var(--accent-terracotta);
+  color: #FFF;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(224, 99, 84, 0.4);
+  position: relative;
+}
+
+.calendar-day-num.active-event::after {
+  content: '★';
+  position: absolute;
+  top: -6px;
+  right: -2px;
+  font-size: 9px;
+  color: #FFD166;
+}
+
+/* Countdown Timer */
+.countdown-container {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.countdown-title {
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.countdown-item {
+  background: var(--bg-warm-paper);
+  border: 1px solid var(--border-kraft);
+  border-radius: 10px;
+  padding: 10px 4px;
+}
+
+.countdown-number {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: block;
+}
+
+.countdown-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Venue & Directions */
+.venue-details {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.venue-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.venue-address {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #FFF;
+  border: 1.5px solid var(--text-main);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 30px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-action:hover {
+  background: var(--text-main);
+  color: #FFF;
+}
+
+/* Contact Info Section (Giống hệt IvyInvi) */
+.contact-banner-card {
+  margin-top: 20px;
+  background: #F5EFE6;
+  border: 1.5px dashed var(--border-kraft);
+  border-radius: 16px;
+  padding: 16px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.contact-banner-card:hover {
+  background: #EFE4D6;
+  transform: translateY(-2px);
+}
+
+.contact-banner-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  color: var(--accent-terracotta);
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.contact-banner-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.contact-banner-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   PHOTO ALBUM SECTION (ALBUM ẢNH THANH XUÂN)
+   Hỗ trợ 2 kiểu: Trượt ngang (horizontal) & Để dọc (vertical)
+   ========================================================================== */
+
+/* 1. KIỂU TRƯỢT NGANG (HORIZONTAL SLIDER) */
+.album-horizontal-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 10px 4px 20px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.album-horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.album-horizontal-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-kraft);
+  border-radius: 4px;
+}
+
+.album-h-card {
+  flex: 0 0 240px;
+  scroll-snap-align: center;
+  background: #FFF;
+  padding: 10px 10px 32px 10px;
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.album-h-card:hover {
+  transform: translateY(-4px);
+}
+
+.album-h-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+.album-card-caption {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-script);
+  font-size: 1.25rem;
+  color: var(--text-main);
+}
+
+/* 2. KIỂU ĐỂ DỌC (VERTICAL STACK) */
+.album-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.album-v-card {
+  width: 100%;
+  max-width: 360px;
+  background: #FFF;
+  padding: 12px 12px 40px 12px;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.album-v-card:nth-child(odd) {
+  transform: rotate(-1.5deg);
+}
+
+.album-v-card:nth-child(even) {
+  transform: rotate(1.5deg);
+}
+
+.album-v-card:hover {
+  transform: rotate(0deg) scale(1.02);
+  z-index: 5;
+}
+
+.album-v-card img {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+/* ==========================================================================
+   GUESTBOOK / SỔ LƯU BÚT (KHÔNG CÓ DỮ LIỆU GIẢ)
+   ========================================================================== */
+.wish-form {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-kraft);
+  border-radius: 10px;
+  background: #FFF;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--accent-terracotta);
+}
+
+.form-textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+.wish-tools {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.char-counter {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.btn-submit-wish {
+  width: 100%;
+  background: var(--text-main);
+  color: #FFF;
+  border: none;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-submit-wish:hover {
+  background: var(--accent-terracotta);
+}
+
+/* Wish List Feed */
+.wishes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.wishes-empty-state {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  font-style: italic;
+  background: var(--bg-warm-paper);
+  border-radius: 10px;
+  border: 1px dashed var(--border-kraft);
+}
+
+.wish-card {
+  background: #FFF;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+.wish-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.wish-author {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.author-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #F0E8D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #7A6953;
+}
+
+.wish-time {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.wish-content {
+  font-size: 0.88rem;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.wish-like-btn {
+  background: none;
+  border: none;
+  font-size: 0.82rem;
+  color: var(--text-light);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s ease;
+}
+
+.wish-like-btn.liked {
+  color: var(--accent-terracotta);
+}
+
+/* ==========================================================================
+   RSVP FORM SECTION (ĐƠN GIẢN: CÓ / KHÔNG, KHÔNG BỘ ĐẾM SỐ LƯỢNG)
+   ========================================================================== */
+.rsvp-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.rsvp-option-btn {
+  border: 1.5px solid var(--border-kraft);
+  background: #FFF;
+  padding: 14px 10px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+.rsvp-option-btn.selected {
+  border-color: var(--accent-terracotta);
+  background: #FDF4F2;
+  color: var(--accent-terracotta);
+}
+
+/* ==========================================================================
+   GIFT & VIETQR BANKING SECTION
+   ========================================================================== */
+.banking-card {
+  background: #FFF;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+}
+
+.qr-code-img {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  margin-bottom: 14px;
+}
+
+.bank-info-row {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.bank-info-label {
+  color: var(--text-muted);
+}
+
+.bank-info-value {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.btn-copy-account {
+  background: #F4EFE6;
+  border: 1px solid var(--border-kraft);
+  color: var(--text-main);
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   FOOTER SCRAPBOOK
+   ========================================================================== */
+.scrapbook-footer {
+  text-align: center;
+  padding: 40px 20px 20px;
+  position: relative;
+}
+
+.stamp-postcard {
+  display: inline-block;
+  border: 2px dashed #998B7A;
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #998B7A;
+  transform: rotate(4deg);
+  margin-bottom: 16px;
+}
+
+.footer-credits {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+/* ==========================================================================
+   FLOATING UTILITY BUTTONS (CHỈ CÒN NHẠC VÀ TỰ CUỘN, KHÔNG CÓ NÚT EDIT)
+   ========================================================================== */
+.floating-bar {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999;
+}
+
+.float-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-kraft);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-main);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.float-btn:hover {
+  transform: scale(1.1);
+  background: #FFF;
+}
+
+.float-btn.active {
+  background: var(--text-main);
+  color: #FFF;
+}
+
+/* Spinning vinyl music disc */
+.music-btn.playing {
+  animation: spinRecord 4s linear infinite;
+  background: #222;
+  color: #FFF;
+  border-color: #444;
+}
+
+@keyframes spinRecord {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   MODAL WINDOWS (LIÊN HỆ & LIGHTBOX - THIẾT KẾ VINTAGE SCRAPBOOK ĐỒNG BỘ)
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(40, 30, 20, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: var(--bg-warm-paper);
+  background-image: radial-gradient(rgba(26, 26, 26, 0.08) 0.75px, transparent 0.75px);
+  background-size: 12px 12px;
+  border: 1.5px solid var(--border-kraft);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(60, 45, 30, 0.25);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.9) translateY(15px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 22px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px dashed var(--border-kraft);
+}
+
+.modal-avatar-badge {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #E06354 0%, #B84739 100%);
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 6px 16px rgba(224, 99, 84, 0.35);
+  border: 2px solid #FFF;
+  margin-bottom: 10px;
+}
+
+.modal-title-vintage {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.5px;
+}
+
+.modal-subtitle-script {
+  font-family: var(--font-script);
+  font-size: 1.4rem;
+  color: var(--accent-terracotta);
+  margin-top: -4px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #EFE7DA;
+  border: 1px solid var(--border-kraft);
+  color: var(--text-muted);
+  font-size: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.modal-close-btn:hover {
+  background: #E06354;
+  color: #FFF;
+  border-color: #E06354;
+  transform: scale(1.08);
+}
+
+.modal-body {
+  padding: 20px 24px 26px;
+}
+
+.contact-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Beautiful vintage-harmonious action buttons */
+.contact-action-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: #FFFDF9;
+  border: 1px solid var(--border-kraft);
+  border-radius: 50px;
+  text-decoration: none;
+  color: var(--text-main);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.contact-action-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  border-color: var(--accent-terracotta);
+}
+
+.contact-item-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.icon-zalo {
+  background: #EBF3FF;
+  color: #0068FF;
+}
+
+.icon-phone {
+  background: #EDFBF3;
+  color: #10B981;
+}
+
+.icon-fb {
+  background: #EEF4FF;
+  color: #1877F2;
+}
+
+.contact-item-text {
+  text-align: left;
+  flex: 1;
+}
+
+.contact-item-label {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.contact-item-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.contact-item-arrow {
+  color: var(--border-kraft);
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.contact-action-item:hover .contact-item-arrow {
+  transform: translateX(4px);
+  color: var(--accent-terracotta);
+}
+
+/* ==========================================================================
+   TOAST NOTIFICATION (THÔNG BÁO XỊN XÒ, THAY THẾ ALERT MẶC ĐỊNH)
+   ========================================================================== */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 16px;
+  right: 16px;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-msg {
+  pointer-events: auto;
+  background: #FFFFFF !important;
+  border: 1.5px solid var(--border-kraft);
+  color: var(--text-main);
+  padding: 12px 22px;
+  border-radius: 50px;
+  box-shadow: 0 10px 28px rgba(40, 30, 20, 0.2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
+  animation: toastIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), toastOut 0.35s ease 2.7s forwards;
+}
+
+.toast-msg i {
+  color: var(--accent-terracotta);
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(-24px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-20px) scale(0.92); }
+}
+
+/* Lightbox Modal phóng to ảnh */
+#lightbox-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 15, 10, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#lightbox-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#lightbox-img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+  border: 3px solid #FFF;
+}
