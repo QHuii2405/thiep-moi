@@ -6,17 +6,19 @@
   'use strict';
 
   // 1. CONFIGURATION INITIALIZATION
+  // Luôn ưu tiên DEFAULT_INVITATION_CONFIG từ config.js (phiên bản chuẩn phát hành trên GitHub)
   let appConfig = {};
-  try {
-    const saved = localStorage.getItem('ivy_invitation_custom_config');
-    if (saved) {
-      appConfig = JSON.parse(saved);
-    } else if (typeof DEFAULT_INVITATION_CONFIG !== 'undefined') {
-      appConfig = JSON.parse(JSON.stringify(DEFAULT_INVITATION_CONFIG));
+  if (typeof DEFAULT_INVITATION_CONFIG !== 'undefined' && DEFAULT_INVITATION_CONFIG) {
+    appConfig = JSON.parse(JSON.stringify(DEFAULT_INVITATION_CONFIG));
+  } else {
+    try {
+      const saved = localStorage.getItem('ivy_invitation_custom_config');
+      if (saved) {
+        appConfig = JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Error loading config from localStorage:', e);
     }
-  } catch (e) {
-    console.error('Error loading config:', e);
-    appConfig = typeof DEFAULT_INVITATION_CONFIG !== 'undefined' ? DEFAULT_INVITATION_CONFIG : {};
   }
 
   // Tự động dọn sạch các đường link nhạc hết hạn hoặc link ảnh cũ nếu còn sót lại trong cache
@@ -28,9 +30,6 @@
       appConfig.albumPhotos[0] = 'https://images.unsplash.com/photo-1531545514256-b1400bc00f31?auto=format&fit=crop&w=600&q=80';
     }
   }
-  try {
-    localStorage.setItem('ivy_invitation_custom_config', JSON.stringify(appConfig));
-  } catch (err) {}
 
   // 2. DOM ELEMENTS
   const elEnvelopeScreen = document.getElementById('envelope-screen');
