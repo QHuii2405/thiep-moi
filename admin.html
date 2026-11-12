@@ -672,17 +672,27 @@
         </h2>
 
         <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 0.88rem; line-height: 1.6;">
-          <p><strong>🔒 Tính bảo mật cho thiệp mời của bạn:</strong></p>
-          <p>Trang thiệp mời <code>index.html</code> chỉ dành riêng cho khách xem, <strong>hoàn toàn không có bất kỳ nút chỉnh sửa nào</strong>. Chỉ có bạn (khi mở trang <code>admin.html</code> này) mới có quyền chỉnh sửa nội dung và xuất mã nguồn!</p>
+          <p><strong>⚠️ LƯU Ý QUAN TRỌNG ĐỂ BẠN BÈ THẤY ĐƯỢC THÔNG TIN CỦA BẠN:</strong></p>
+          <p>GitHub Pages là trang web tĩnh miễn phí. Khi bạn bấm <em>Lưu</em> ở trên, trình duyệt mới chỉ lưu trên máy của bạn. Để <strong>tất cả khách mời ở máy khác</strong> đều thấy đúng tên, ngày giờ và STK của bạn, bạn chỉ cần cập nhật file <code>config.js</code> lên GitHub theo 1 trong các cách dưới đây:</p>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 14px; max-width: 480px;">
-          <button id="btn-download-zip" class="btn-save-all" style="background: #10B981; padding: 14px 20px; font-size: 1rem; justify-content: center;">
-            <i class="fa-solid fa-file-zipper"></i> Tải Toàn Bộ Code (ZIP) Cho GitHub Pages
+          <button id="btn-copy-config-code" class="btn-save-all" style="background: #2563EB; padding: 12px 20px; font-size: 0.95rem; justify-content: center;">
+            <i class="fa-regular fa-copy"></i> 1. Sao Chép Toàn Bộ Mã Cấu Hình (config.js)
           </button>
 
+          <a href="https://github.com/QHuii2405/thiep-moi/edit/main/config.js" target="_blank" class="btn-save-all" style="background: #111827; padding: 12px 20px; font-size: 0.95rem; justify-content: center; text-decoration: none;">
+            <i class="fa-brands fa-github"></i> 2. Mở GitHub Dán Đè & Bấm Commit
+          </a>
+
+          <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+
           <button id="btn-download-config" class="form-control" style="cursor: pointer; font-weight: 600; text-align: center; background: #FFF;">
-            <i class="fa-solid fa-file-code"></i> Tải riêng file cấu hình (config.js)
+            <i class="fa-solid fa-file-code"></i> Hoặc: Tải riêng file cấu hình (config.js)
+          </button>
+
+          <button id="btn-download-zip" class="btn-save-all" style="background: #10B981; padding: 12px 20px; font-size: 0.95rem; justify-content: center;">
+            <i class="fa-solid fa-file-zipper"></i> Tải Toàn Bộ Code (ZIP) Cho GitHub Pages
           </button>
 
           <button id="btn-copy-guest-link" class="form-control" style="cursor: pointer; font-weight: 600; text-align: center; background: #FFF;">

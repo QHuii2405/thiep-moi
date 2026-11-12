@@ -374,6 +374,18 @@
       saveAs(blob, 'config.js');
     });
 
+    // Copy Config Code directly to clipboard
+    const btnCopyConfigCode = document.getElementById('btn-copy-config-code');
+    if (btnCopyConfigCode) {
+      btnCopyConfigCode.addEventListener('click', () => {
+        readFormInputs();
+        const content = `// Cấu hình thiệp mời trực tuyến IvyInvi\nconst DEFAULT_INVITATION_CONFIG = ${JSON.stringify(appConfig, null, 2)};\n`;
+        navigator.clipboard.writeText(content).then(() => {
+          showToast('Đã sao chép! Hãy bấm nút "2. Mở GitHub Dán Đè" để lưu nhé!', 'fa-copy');
+        });
+      });
+    }
+
     // Copy Guest Link
     btnCopyGuestLink.addEventListener('click', () => {
       const url = `${window.location.origin}${window.location.pathname.replace('admin.html', 'index.html')}?to=Bạn`;
