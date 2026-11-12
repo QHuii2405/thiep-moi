@@ -101,6 +101,9 @@
 
   // 3. INITIALIZATION
   function init() {
+    if (appConfig.eventType && appConfig.ownerName) {
+      document.title = `${appConfig.eventType} - ${appConfig.ownerName} | HUIT`;
+    }
     handleUrlParams();
     renderAll();
     setupEventListeners();

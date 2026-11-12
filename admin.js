@@ -210,42 +210,100 @@
     }, 3100);
   }
 
+  // Compress Image using HTML5 Canvas to prevent QuotaExceededError and slow loading
+  function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+      if (!file || !file.type || !file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        };
+        img.onerror = () => resolve(e.target.result);
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   // Media Handlers (Upload Cover, Upload Album, Upload Audio)
   function setupMediaHandlers() {
     // Cover Photo Upload
     zoneCover.addEventListener('click', () => inputCoverFile.click());
-    inputCoverFile.addEventListener('change', (e) => {
+    inputCoverFile.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          appConfig.coverPhoto = event.target.result;
-          document.getElementById('cfg-coverPhoto').value = event.target.result;
+        showToast('Đang tối ưu dung lượng ảnh chân dung...', 'fa-circle-notch fa-spin');
+        try {
+          const compressed = await compressImageFile(file, 1200, 1200, 0.82);
+          appConfig.coverPhoto = compressed;
+          document.getElementById('cfg-coverPhoto').value = compressed;
           showToast('Đã tải ảnh chân dung thành công!', 'fa-image');
-        };
-        reader.readAsDataURL(file);
+        } catch (err) {
+          console.error(err);
+          const reader = new FileReader();
+          reader.onload = ev => {
+            appConfig.coverPhoto = ev.target.result;
+            document.getElementById('cfg-coverPhoto').value = ev.target.result;
+            showToast('Đã tải ảnh chân dung!', 'fa-image');
+          };
+          reader.readAsDataURL(file);
+        }
       }
     });
 
     // Album Photos Upload (Multi)
     zoneAlbum.addEventListener('click', () => inputAlbumFile.click());
-    inputAlbumFile.addEventListener('change', (e) => {
+    inputAlbumFile.addEventListener('change', async (e) => {
       const files = Array.from(e.target.files);
       if (!appConfig.albumPhotos) appConfig.albumPhotos = [];
 
       let added = 0;
-      files.forEach(file => {
-        if (appConfig.albumPhotos.length >= 10) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          appConfig.albumPhotos.push(event.target.result);
+      showToast('Đang nén và tải ảnh vào album...', 'fa-circle-notch fa-spin');
+      for (const file of files) {
+        if (appConfig.albumPhotos.length >= 10) break;
+        try {
+          const compressed = await compressImageFile(file, 1000, 1000, 0.78);
+          appConfig.albumPhotos.push(compressed);
+          added++;
           renderAlbumThumbnails();
-        };
-        reader.readAsDataURL(file);
-        added++;
-      });
+        } catch (err) {
+          console.error(err);
+        }
+      }
       if (added > 0) {
-        setTimeout(renderAlbumThumbnails, 500);
+        renderAlbumThumbnails();
+        showToast(`Đã thêm ${added} ảnh vào album thành công!`, 'fa-images');
       }
     });
 
@@ -442,7 +500,11 @@
 
   async function publishToGitHub1Click() {
     readFormInputs();
-    localStorage.setItem('ivy_invitation_custom_config', JSON.stringify(appConfig));
+    try {
+      localStorage.setItem('ivy_invitation_custom_config', JSON.stringify(appConfig));
+    } catch (storageErr) {
+      console.warn('LocalStorage quota exceeded (dữ liệu ảnh lớn), bỏ qua lưu cache máy:', storageErr);
+    }
 
     const token = (ghTokenInput && ghTokenInput.value.trim()) || localStorage.getItem('ivy_github_token') || '';
     if (!token) {
@@ -458,6 +520,16 @@
     }
 
     localStorage.setItem('ivy_github_token', token);
+
+    // Visual button loading state
+    if (btnPublishGithub1Click) {
+      btnPublishGithub1Click.disabled = true;
+      btnPublishGithub1Click.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xuất bản lên GitHub...';
+    }
+    if (btnQuickPublishGithub) {
+      btnQuickPublishGithub.disabled = true;
+      btnQuickPublishGithub.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xuất bản...';
+    }
 
     const showStatus = (msg, type = 'info') => {
       if (!publishStatusBox) return;
@@ -482,7 +554,7 @@
 
     try {
       showStatus('Đang kết nối GitHub và kiểm tra dữ liệu hiện tại...', 'loading');
-      showToast('Đang xuất bản lên GitHub...', 'fa-cloud-arrow-up');
+      showToast('Đang kết nối và tải dữ liệu lên GitHub...', 'fa-cloud-arrow-up');
 
       const owner = 'QHuii2405';
       const repo = 'thiep-moi';
@@ -506,7 +578,7 @@
           throw new Error('Mã GitHub Token không hợp lệ hoặc không có quyền "repo". Vui lòng kiểm tra lại token.');
         }
       } catch (err) {
-        if (err.message.includes('Token')) throw err;
+        if (err.message && err.message.includes('Token')) throw err;
       }
 
       // 2. Chuẩn bị nội dung config.js mới
@@ -522,7 +594,7 @@
       const base64Content = btoa(binaryString);
 
       // 3. Đẩy file mới lên GitHub
-      showStatus('Đang cập nhật file cấu hình lên kho GitHub...', 'loading');
+      showStatus('Đang đẩy dữ liệu thiệp mời lên kho lưu trữ GitHub...', 'loading');
 
       const payload = {
         message: `Cập nhật cấu hình thiệp mời từ Admin Panel (${new Date().toLocaleString('vi-VN')})`,
@@ -554,12 +626,25 @@
       console.error(err);
       showStatus(`❌ Lỗi khi xuất bản: ${err.message}`, 'error');
       showToast('Lỗi xuất bản: ' + err.message, 'fa-triangle-exclamation');
+    } finally {
+      if (btnPublishGithub1Click) {
+        btnPublishGithub1Click.disabled = false;
+        btnPublishGithub1Click.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Xuất Bản Lên GitHub Ngay (1-Click)';
+      }
+      if (btnQuickPublishGithub) {
+        btnQuickPublishGithub.disabled = false;
+        btnQuickPublishGithub.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Xuất Bản Lên GitHub (1-Click)';
+      }
     }
   }
 
   function saveAll() {
     readFormInputs();
-    localStorage.setItem('ivy_invitation_custom_config', JSON.stringify(appConfig));
+    try {
+      localStorage.setItem('ivy_invitation_custom_config', JSON.stringify(appConfig));
+    } catch (storageErr) {
+      console.warn('LocalStorage quota exceeded, bỏ qua lưu cache máy:', storageErr);
+    }
     showToast('Đã lưu tất cả thay đổi thành công!', 'fa-floppy-disk');
   }
 
