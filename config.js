@@ -1,4 +1,4 @@
-// Cấu hình thiệp mời trực tuyến IvyInvi
+// Cấu hình thiệp mời trực tuyến IvyInvi - Tự động cập nhật từ Admin Panel
 const DEFAULT_INVITATION_CONFIG = {
   "eventType": "LỄ TỐT NGHIỆP",
   "ownerName": "QUANG HUY",
