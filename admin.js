@@ -60,6 +60,13 @@
   const btnCopyGuestLink = document.getElementById('btn-copy-guest-link');
   const btnClearTestData = document.getElementById('btn-clear-test-data');
 
+  // 1-Click GitHub Publish Elements
+  const btnQuickPublishGithub = document.getElementById('btn-quick-publish-github');
+  const btnPublishGithub1Click = document.getElementById('btn-publish-github-1click');
+  const ghTokenInput = document.getElementById('gh-token-input');
+  const btnToggleToken = document.getElementById('btn-toggle-token');
+  const publishStatusBox = document.getElementById('publish-status-box');
+
   // 3. INITIALIZATION
   function init() {
     setupTabNavigation();
@@ -406,6 +413,148 @@
 
     // Export Complete ZIP Package for GitHub Pages
     btnDownloadZip.addEventListener('click', exportCompleteZip);
+
+    // 1-Click GitHub Publish Handler
+    const savedGhToken = localStorage.getItem('ivy_github_token');
+    if (savedGhToken && ghTokenInput) {
+      ghTokenInput.value = savedGhToken;
+    }
+
+    if (btnToggleToken && ghTokenInput) {
+      btnToggleToken.addEventListener('click', () => {
+        if (ghTokenInput.type === 'password') {
+          ghTokenInput.type = 'text';
+          btnToggleToken.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+        } else {
+          ghTokenInput.type = 'password';
+          btnToggleToken.innerHTML = '<i class="fa-regular fa-eye"></i>';
+        }
+      });
+    }
+
+    if (btnPublishGithub1Click) {
+      btnPublishGithub1Click.addEventListener('click', publishToGitHub1Click);
+    }
+    if (btnQuickPublishGithub) {
+      btnQuickPublishGithub.addEventListener('click', publishToGitHub1Click);
+    }
+  }
+
+  async function publishToGitHub1Click() {
+    readFormInputs();
+    localStorage.setItem('ivy_invitation_custom_config', JSON.stringify(appConfig));
+
+    const token = (ghTokenInput && ghTokenInput.value.trim()) || localStorage.getItem('ivy_github_token') || '';
+    if (!token) {
+      // Switch to tab 7
+      const tabDeployBtn = document.querySelector('.nav-btn[data-target="tab-deploy"]');
+      if (tabDeployBtn) tabDeployBtn.click();
+      if (ghTokenInput) {
+        ghTokenInput.focus();
+        ghTokenInput.style.borderColor = '#EF4444';
+      }
+      showToast('Vui lòng nhập GitHub Token để tự động xuất bản!', 'fa-key');
+      return;
+    }
+
+    localStorage.setItem('ivy_github_token', token);
+
+    const showStatus = (msg, type = 'info') => {
+      if (!publishStatusBox) return;
+      publishStatusBox.style.display = 'block';
+      if (type === 'loading') {
+        publishStatusBox.style.background = '#EFF6FF';
+        publishStatusBox.style.border = '1px solid #93C5FD';
+        publishStatusBox.style.color = '#1D4ED8';
+        publishStatusBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${msg}`;
+      } else if (type === 'success') {
+        publishStatusBox.style.background = '#ECFDF5';
+        publishStatusBox.style.border = '1px solid #A7F3D0';
+        publishStatusBox.style.color = '#065F46';
+        publishStatusBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${msg}`;
+      } else {
+        publishStatusBox.style.background = '#FEF2F2';
+        publishStatusBox.style.border = '1px solid #FECACA';
+        publishStatusBox.style.color = '#991B1B';
+        publishStatusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${msg}`;
+      }
+    };
+
+    try {
+      showStatus('Đang kết nối GitHub và kiểm tra dữ liệu hiện tại...', 'loading');
+      showToast('Đang xuất bản lên GitHub...', 'fa-cloud-arrow-up');
+
+      const owner = 'QHuii2405';
+      const repo = 'thiep-moi';
+      const path = 'config.js';
+      const branch = 'main';
+
+      // 1. Lấy SHA hiện tại của config.js trên branch main
+      let fileSha = null;
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        if (getRes.status === 200) {
+          const fileData = await getRes.json();
+          fileSha = fileData.sha;
+        } else if (getRes.status === 401 || getRes.status === 403) {
+          throw new Error('Mã GitHub Token không hợp lệ hoặc không có quyền "repo". Vui lòng kiểm tra lại token.');
+        }
+      } catch (err) {
+        if (err.message.includes('Token')) throw err;
+      }
+
+      // 2. Chuẩn bị nội dung config.js mới
+      const configContent = `// Cấu hình thiệp mời trực tuyến IvyInvi - Tự động cập nhật từ Admin Panel\nconst DEFAULT_INVITATION_CONFIG = ${JSON.stringify(appConfig, null, 2)};\n`;
+
+      // Mã hóa an toàn UTF-8 sang Base64 cho tiếng Việt và dữ liệu lớn
+      const utf8Bytes = new TextEncoder().encode(configContent);
+      let binaryString = '';
+      const chunkSize = 8192;
+      for (let i = 0; i < utf8Bytes.length; i += chunkSize) {
+        binaryString += String.fromCharCode.apply(null, utf8Bytes.subarray(i, i + chunkSize));
+      }
+      const base64Content = btoa(binaryString);
+
+      // 3. Đẩy file mới lên GitHub
+      showStatus('Đang cập nhật file cấu hình lên kho GitHub...', 'loading');
+
+      const payload = {
+        message: `Cập nhật cấu hình thiệp mời từ Admin Panel (${new Date().toLocaleString('vi-VN')})`,
+        content: base64Content,
+        branch: branch
+      };
+      if (fileSha) {
+        payload.sha = fileSha;
+      }
+
+      const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!putRes.ok) {
+        const errData = await putRes.json().catch(() => ({}));
+        throw new Error(errData.message || `Lỗi cập nhật GitHub (${putRes.status})`);
+      }
+
+      showStatus(`🎉 <strong>Xuất bản thành công!</strong> Dữ liệu đã được cập nhật trực tiếp lên GitHub. Sau khoảng 30 - 60 giây, link <a href="https://${owner.toLowerCase()}.github.io/${repo}/" target="_blank" style="text-decoration:underline; font-weight:bold;">${owner.toLowerCase()}.github.io/${repo}/</a> sẽ hiển thị thông tin mới nhất cho tất cả bạn bè!`, 'success');
+      showToast('Đã xuất bản thành công lên GitHub!', 'fa-circle-check');
+    } catch (err) {
+      console.error(err);
+      showStatus(`❌ Lỗi khi xuất bản: ${err.message}`, 'error');
+      showToast('Lỗi xuất bản: ' + err.message, 'fa-triangle-exclamation');
+    }
   }
 
   function saveAll() {

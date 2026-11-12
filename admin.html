@@ -406,8 +406,11 @@
     <header class="admin-topbar">
       <h1 class="admin-page-title" id="page-title">1. Thông Tin Sự Kiện</h1>
       <div class="topbar-actions">
-        <button id="btn-save-header" class="btn-save-all">
-          <i class="fa-solid fa-floppy-disk"></i> Lưu Tất Cả Cài Đặt
+        <button id="btn-save-header" class="btn-save-all" style="background: #4B5563;" title="Chỉ lưu vào bộ nhớ tạm trên máy tính này">
+          <i class="fa-solid fa-floppy-disk"></i> Lưu Vào Máy
+        </button>
+        <button id="btn-quick-publish-github" class="btn-save-all" style="background: #16A34A;" title="Tự động cập nhật file lên GitHub và xuất bản trực tuyến">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Xuất Bản Lên GitHub (1-Click)
         </button>
       </div>
     </header>
@@ -671,9 +674,40 @@
           <i class="fa-brands fa-github"></i> Xuất Bản & Deploy Lên GitHub Pages Hoàn Toàn Miễn Phí
         </h2>
 
-        <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 0.88rem; line-height: 1.6;">
-          <p><strong>⚠️ LƯU Ý QUAN TRỌNG ĐỂ BẠN BÈ THẤY ĐƯỢC THÔNG TIN CỦA BẠN:</strong></p>
-          <p>GitHub Pages là trang web tĩnh miễn phí. Khi bạn bấm <em>Lưu</em> ở trên, trình duyệt mới chỉ lưu trên máy của bạn. Để <strong>tất cả khách mời ở máy khác</strong> đều thấy đúng tên, ngày giờ và STK của bạn, bạn chỉ cần cập nhật file <code>config.js</code> lên GitHub theo 1 trong các cách dưới đây:</p>
+        <!-- TỰ ĐỘNG 1-CLICK: ĐỒNG BỘ TRỰC TIẾP LÊN GITHUB -->
+        <div style="background: #F0FDF4; border: 2px solid #86EFAC; border-radius: 10px; padding: 20px; margin-bottom: 24px; max-width: 620px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <span style="font-size: 1.5rem;">🚀</span>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #166534;">Xuất Bản Lên GitHub Tự Động (1-Click)</h3>
+          </div>
+          <p style="font-size: 0.88rem; color: #15803D; margin-bottom: 16px; line-height: 1.5;">
+            Chỉ cần nhập GitHub Token <strong>1 lần duy nhất</strong>. Từ nay về sau mỗi lần chỉnh sửa thiệp, bạn chỉ cần bấm đúng <strong>1 nút</strong> này là toàn bộ thay đổi sẽ tự động đẩy lên GitHub và cập nhật trang web sau 30 giây!
+          </p>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: #1F2937;">
+              Mã GitHub Personal Access Token (PAT):
+            </label>
+            <div style="display: flex; gap: 8px;">
+              <input type="password" id="gh-token-input" class="form-control" placeholder="Dán mã ghp_... vào đây (chỉ cần nhập 1 lần)" style="font-family: monospace;">
+              <button type="button" id="btn-toggle-token" class="form-control" style="width: auto; padding: 0 14px; cursor: pointer; background: #FFF;" title="Hiện/Ẩn Token">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            <div style="margin-top: 8px; font-size: 0.83rem; color: #4B5563;">
+              👉 <a href="https://github.com/settings/tokens/new?scopes=repo&description=IvyInvi-Online-Invitation" target="_blank" style="color: #2563EB; font-weight: 600; text-decoration: underline;">Nhấn vào đây để tạo mã Token trên GitHub (đã chọn sẵn quyền)</a>
+            </div>
+          </div>
+
+          <button type="button" id="btn-publish-github-1click" class="btn-save-all" style="background: #16A34A; padding: 14px 20px; font-size: 1rem; width: 100%; justify-content: center; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.3);">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Xuất Bản Lên GitHub Ngay (1-Click)
+          </button>
+
+          <div id="publish-status-box" style="display: none; margin-top: 14px; padding: 12px 16px; border-radius: 6px; font-size: 0.88rem; line-height: 1.5;"></div>
+        </div>
+
+        <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 0.88rem; line-height: 1.6; max-width: 620px;">
+          <p><strong>Hoặc các phương thức xuất bản thủ công dự phòng:</strong></p>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 14px; max-width: 480px;">
